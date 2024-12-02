@@ -5,6 +5,9 @@
 	$url_next['params']['next'] = FreshRSS_Context::$next_id;
 	$url_next['params']['state'] = (string)FreshRSS_Context::$state;
 	$url_next['params']['ajax'] = '1';
+	if (FreshRSS_Context::userConf()->sort_by_publish) {
+		$url_next['params']['offset'] = FreshRSS_Context::$offset;
+	}
 
 	$url_mark_read = [
 		'c' => 'entry',

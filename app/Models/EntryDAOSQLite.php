@@ -155,7 +155,12 @@ SQL;
 			Minz_Log::debug('Calling markReadTag(0) is deprecated!');
 		}
 
-		$sql = 'UPDATE `_entry` SET is_read = ? WHERE is_read <> ? AND id <= ? AND '
+		if (FreshRSS_Context::userConf()->sort_by_publish && strlen($idMax) >= 12 && substr($idMax, -6) === '000000') {
+			$idMax = substr($idMax, 0, -6);
+		}
+
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'date' : 'id';
+		$sql = 'UPDATE `_entry` SET is_read = ? WHERE is_read <> ? AND ' . $orderedBy . ' <= ? AND '
 			 . 'id IN (SELECT et.id_entry FROM `_entrytag` et '
 			 . ($id == 0 ? '' : 'WHERE et.id_tag = ?')
 			 . ')';

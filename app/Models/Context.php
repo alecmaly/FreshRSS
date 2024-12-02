@@ -47,6 +47,7 @@ final class FreshRSS_Context {
 	 */
 	public static string $order = 'DESC';
 	public static int $number = 0;
+	public static $sort_by_publish = false;
 	public static int $offset = 0;
 	public static FreshRSS_BooleanSearch $search;
 	public static string $first_id = '';

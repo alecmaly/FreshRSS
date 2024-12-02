@@ -260,6 +260,7 @@ return array(
 		'star' => array(
 			'when' => 'Mark an article as favorite…',
 		),
+		'sort_by_publish' => 'Sort by publish date', // IGNORE
 		'sticky_post' => 'Stick the article to the top when opened',	// IGNORE
 		'title' => 'Reading',	// IGNORE
 		'view' => array(

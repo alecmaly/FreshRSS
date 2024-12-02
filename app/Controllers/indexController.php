@@ -84,6 +84,8 @@ class FreshRSS_index_Controller extends FreshRSS_ActionController {
 		};
 
 		$this->view->callbackBeforePagination = static function (?FreshRSS_View $view, int $nbEntries, FreshRSS_Entry $lastEntry) {
+			FreshRSS_Context::$offset = FreshRSS_Context::$offset + ($nbEntries > 0 ? $nbEntries - 1 : 0);
+
 			if ($nbEntries >= FreshRSS_Context::$number) {
 				//We have enough entries: we discard the last one to use it for the next articles' page
 				ob_clean();

@@ -491,7 +491,12 @@ SQL;
 			Minz_Log::debug('Calling markReadEntries(0) is deprecated!');
 		}
 
-		$sql = 'UPDATE `_entry` SET is_read = ? WHERE is_read <> ? AND id <= ?';
+		if (FreshRSS_Context::userConf()->sort_by_publish && strlen($idMax) >= 12 && substr($idMax, -6) === '000000') {
+			$idMax = substr($idMax, 0, -6);
+		}
+		
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'date' : 'id';
+		$sql = 'UPDATE `_entry` SET is_read = ? WHERE is_read <> ? AND ' . $orderedBy . ' <= ?';
 		$values = [$is_read ? 1 : 0, $is_read ? 1 : 0, $idMax];
 		if ($onlyFavorites) {
 			$sql .= ' AND is_favorite=1';
@@ -587,9 +592,10 @@ SQL;
 			$this->pdo->beginTransaction();
 		}
 
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'date' : 'id';
 		$sql = 'UPDATE `_entry` '
 			 . 'SET is_read=? '
-			 . 'WHERE id_feed=? AND is_read <> ? AND id <= ?';
+			 . 'WHERE id_feed=? AND is_read <> ? AND ' . $orderedBy . ' <= ?';
 		$values = [$is_read ? 1 : 0, $id_feed, $is_read ? 1 : 0, $idMax];
 
 		[$searchValues, $search] = $this->sqlListEntriesWhere('', $filters, $state);
@@ -638,11 +644,12 @@ SQL;
 			Minz_Log::debug('Calling markReadTag(0) is deprecated!');
 		}
 
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'date' : 'id';
 		$sql = 'UPDATE `_entry` e INNER JOIN `_entrytag` et ON et.id_entry = e.id '
 			 . 'SET e.is_read = ? '
 			 . 'WHERE '
 			 . ($id == 0 ? '' : 'et.id_tag = ? AND ')
-			 . 'e.is_read <> ? AND e.id <= ?';
+			 . 'e.is_read <> ? AND e.' . $orderedBy . ' <= ?';
 		$values = [$is_read ? 1 : 0];
 		if ($id != 0) {
 			$values[] = $id;
@@ -1134,12 +1141,13 @@ SQL;
 			default:
 				throw new FreshRSS_EntriesGetter_Exception('Bad order in Entry->listByType: [' . $order . ']!');
 		}
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'date ' : 'id ';
 		if ($firstId !== '') {
-			$search .= 'AND ' . $alias . 'id ' . ($order === 'DESC' ? '<=' : '>=') . ' ? ';
+			$search .= 'AND ' . $alias . $orderedBy . ($order === 'DESC' ? '<=' : '>=') . ' ? ';
 			$values[] = $firstId;
 		}
 		if ($date_min > 0) {
-			$search .= 'AND ' . $alias . 'id >= ? ';
+			$search .= 'AND ' . $alias . $orderedBy . ' >= ? ';
 			$values[] = $date_min . '000000';
 		}
 		if ($filters !== null && count($filters->searches()) > 0) {
@@ -1211,6 +1219,7 @@ SQL;
 
 		[$searchValues, $search] = $this->sqlListEntriesWhere('e.', $filters, $state, $order, $firstId, $date_min);
 
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'ORDER BY e.date ' : 'ORDER BY e.id ';
 		return [array_merge($values, $searchValues), 'SELECT '
 			. ($type === 'T' ? 'DISTINCT ' : '')
 			. 'e.id FROM `_entry` e '
@@ -1218,7 +1227,7 @@ SQL;
 			. ($type === 't' || $type === 'T' ? 'INNER JOIN `_entrytag` et ON et.id_entry = e.id ' : '')
 			. 'WHERE ' . $where
 			. $search
-			. 'ORDER BY e.id ' . $order
+			. $orderedBy . $order
 			. ($limit > 0 ? ' LIMIT ' . $limit : '')	// http://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/
 			. ($offset > 0 ? ' OFFSET ' . $offset : '')
 		];
@@ -1240,11 +1249,12 @@ SQL;
 		}
 		$content = static::isCompressed() ? 'UNCOMPRESS(e0.content_bin) AS content' : 'e0.content';
 		$hash = static::sqlHexEncode('e0.hash');
+		$orderedBy = FreshRSS_Context::userConf()->sort_by_publish ? 'ORDER BY e0.date ' : 'ORDER BY e0.id ';
 		$sql = <<<SQL
 SELECT e0.id, e0.guid, e0.title, e0.author, {$content}, e0.link, e0.date, {$hash} AS hash, e0.is_read, e0.is_favorite, e0.id_feed, e0.tags, e0.attributes
 FROM `_entry` e0
 INNER JOIN ({$sql}) e2 ON e2.id=e0.id
-ORDER BY e0.id {$order}
+{$orderedBy} {$order}
 SQL;
 		$stm = $this->pdo->prepare($sql);
 		if ($stm !== false && $stm->execute($values)) {

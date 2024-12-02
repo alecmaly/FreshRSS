@@ -777,7 +777,7 @@ HTML;
 	}
 
 	public function isDay(int $day, int $today): bool {
-		$date = $this->dateAdded(true);
+		$date = FreshRSS_Context::userConf()->sort_by_publish ? $this->date(true) : $this->dateAdded(true);
 		switch ($day) {
 			case FreshRSS_Days::TODAY:
 				$tomorrow = $today + 86400;
