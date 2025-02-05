@@ -57,13 +57,14 @@ return array(
 			'prepend' => 'Add before existing content',	// TODO
 			'replace' => 'Replace existing content',	// TODO
 		),
+		'content_retrieval' => 'Content retrieval',	// TODO
 		'css_cookie' => 'Use Cookies when fetching the article content',	// TODO
 		'css_cookie_help' => 'Example: <kbd>foo=bar; gdpr_consent=true; cookie=value</kbd>',	// TODO
 		'css_help' => 'Retrieves truncated RSS feeds (caution, requires more time!)',	// TODO
 		'css_path' => 'Article CSS selector on original website',	// TODO
 		'css_path_filter' => array(
 			'_' => 'CSS selector of the elements to remove',	// TODO
-			'help' => 'A CSS selector may be a list such as: <kbd>.footer, .aside, p[data-sanitized-class="menu"]</kbd>',	// TODO
+			'help' => 'A CSS selector may be a list such as: <kbd>footer, aside, p[data-sanitized-class~="menu"]</kbd>',	// TODO
 		),
 		'description' => 'Description',	// TODO
 		'empty' => 'This feed is empty. Please verify that it is still maintained.',	// TODO
@@ -201,6 +202,7 @@ return array(
 		'no_selected' => 'No feed selected.',	// TODO
 		'number_entries' => '%d articles',	// TODO
 		'open_feed' => 'Open feed %s',	// TODO
+		'path_entries_conditions' => 'Conditions for content retrieval',	// TODO
 		'priority' => array(
 			'_' => 'Visibility',	// TODO
 			'archived' => 'Do not show (archived)',	// TODO
@@ -215,7 +217,7 @@ return array(
 			'show_rendered' => 'Show content',	// TODO
 		),
 		'show' => array(
-			'all' => 'Show all feeds',	// TODO
+			'all' => 'All feeds',	// TODO
 			'error' => 'Show only feeds with errors',	// TODO
 		),
 		'showing' => array(
@@ -285,6 +287,7 @@ return array(
 		'add_dynamic_opml' => 'Add dynamic OPML',	// TODO
 		'add_feed' => 'Add a feed',	// TODO
 		'add_label' => 'Add a label',	// TODO
+		'add_opml_category' => 'OPML category name',	// TODO
 		'delete_label' => 'Delete a label',	// TODO
 		'feed_management' => 'RSS feeds management',	// TODO
 		'rename_label' => 'Rename a label',	// TODO
